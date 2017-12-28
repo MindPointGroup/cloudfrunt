@@ -1,0 +1,6 @@
+# Exclude the dnsrecon package
+dnsrecon/
+
+# Exclude files created during scans
+results.txt
+output.json
