@@ -30,6 +30,7 @@ THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED WARRA
 #### Installation
 
 ```
+$ pip install boto3
 $ pip install netaddr
 $ pip install dnspython
 $ git clone https://github.com/disloops/cloudfrunt.git
@@ -42,13 +43,15 @@ CloudFrunt expects the *dnsrecon* script to be cloned into a subdirectory called
 #### Usage
 
 ```
-cloudfrunt.py [-h] [-l TARGET_FILE] [-d DOMAINS] [-s] [-N]
+cloudfrunt.py [-h] [-l TARGET_FILE] [-d DOMAINS] [-o ORIGIN] [-i ORIGIN_ID] [-s] [-N]
 
 -h, --help                      Show this message and exit
 -s, --save                      Save the results to results.txt
 -N, --no-dns                    Do not use dnsrecon to expand scope
 -l, --target-file TARGET_FILE   File containing a list of domains (one per line)
 -d, --domains DOMAINS           Comma-separated list of domains to scan
+-o, --origin ORIGIN             Add vulnerable domains to new distributions with this origin
+-i, --origin-id ORIGIN_ID       The origin ID to use with new distributions
 ```
 
 #### Example
@@ -56,21 +59,9 @@ cloudfrunt.py [-h] [-l TARGET_FILE] [-d DOMAINS] [-s] [-N]
 ```
 $ python cloudfrunt.py -l targets.txt
 
- CloudFrunt v1.0.0
+ CloudFrunt v1.0.1
 
- [-] Enumerating DNS entries for disloops.com
-
- [+] Adding disloops.com
- [+] Adding cdn.disloops.com
- [+] Adding ftp.disloops.com
- [+] Adding ec2-52-2-71-11.compute-1.amazonaws.com
- [+] Adding www.disloops.com
-
- [-] Checking for CloudFront domains...
-
- [*] Found CloudFront domain --> cdn.disloops.com
-
- [-] Testing all CloudFront domains...
-
- [x] No misconfigured CloudFront domains found.
+ [+] Enumerating DNS entries for disloops.com
+ [+] Found CloudFront domain --> cdn.disloops.com
+ [-] No issues found for disloops.com
 ```
