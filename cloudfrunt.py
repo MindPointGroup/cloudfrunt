@@ -73,6 +73,8 @@ def recon_target(domain,cf_ranges,no_dns):
         print ' [?] Is ' + domain + ' a wildcard domain? Skipping...'
         if get_cf_domain(domain,cf_ranges):
             return [domain]
+        else:
+            return []
 
     url_list = []
     for record in dns_records:
