@@ -66,8 +66,7 @@ def recon_target(domain,cf_ranges,no_dns):
         except:
             pass
     else:
-        if get_cf_domain(domain,cf_ranges):
-            return [domain]
+        return [domain] if get_cf_domain(domain,cf_ranges) else []
 
     if len(dns_records) > 1000:
         print ' [?] Is ' + domain + ' a wildcard domain? Skipping...'       
