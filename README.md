@@ -66,7 +66,7 @@ $ python cloudfrunt.py -o cloudfrunt.com.s3-website-us-east-1.amazonaws.com -i S
  [+] Found CloudFront domain --> cdn.disloops.com
  [+] Found CloudFront domain --> test.disloops.com
  [-] Potentially misconfigured CloudFront domains:
- [#] --> cdn.disloops.com
+ [#] --> test.disloops.com
  [+] Created new CloudFront distribution EXBC12DE3F45G
- [+] Added cdn.disloops.com to CloudFront distribution EXBC12DE3F45G
+ [+] Added test.disloops.com to CloudFront distribution EXBC12DE3F45G
 ```
