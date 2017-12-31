@@ -57,11 +57,17 @@ cloudfrunt.py [-h] [-l TARGET_FILE] [-d DOMAINS] [-o ORIGIN] [-i ORIGIN_ID] [-s]
 #### Example
 
 ```
-$ python cloudfrunt.py -l targets.txt
+$ python cloudfrunt.py -o cloudfrunt.com.s3-website-us-east-1.amazonaws.com -i S3-cloudfrunt -s -l list.txt
 
- CloudFrunt v1.0.1
+ [+] Enumerating DNS entries for google.com
+ [-] No issues found for google.com
 
  [+] Enumerating DNS entries for disloops.com
  [+] Found CloudFront domain --> cdn.disloops.com
- [-] No issues found for disloops.com
+ [+] Found CloudFront domain --> test.disloops.com
+ [-] Potentially misconfigured CloudFront domains:
+ [#] --> cdn.disloops.com
+ [+] Created new CloudFront distribution EXBC12DE3F45G
+ [+] Added cdn.disloops.com to CloudFront distribution EXBC12DE3F45G
+ [-] Writing output to results.txt...
 ```
