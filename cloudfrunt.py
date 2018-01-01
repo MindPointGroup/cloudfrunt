@@ -75,7 +75,7 @@ def recon_target(domain,cf_ranges,no_dns):
     url_list = []
     for record in dns_records:
         if (record.get('name') not in url_list) and get_cf_domain(record.get('name'),cf_ranges):
-            url_list.append(record.get('name'))
+            url_list.append(str(record.get('name')).lower())
     return url_list
 
 # check if domain points to CloudFront
@@ -333,7 +333,7 @@ def main():
     # 3. Adjust the scope and report findings
 
     cf_ranges = get_cf_ranges('https://ip-ranges.amazonaws.com/ip-ranges.json')
-    target_list = list(set(target_list))
+    target_list = [target.lower() for target in list(set(target_list))]
 
     for target in target_list:
     
