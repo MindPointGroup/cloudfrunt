@@ -2,15 +2,17 @@
 
 CloudFrunt is a tool for identifying misconfigured CloudFront domains.
 
+Read more here: https://disloops.com/cloudfront-hijacking/
+
 #### Background
 
 CloudFront is a Content Delivery Network (CDN) provided by Amazon Web Services (AWS). CloudFront users create *distributions* with specific origins to serve content from (an S3 bucket, for example).
 
-Each CloudFront distribution has a unique endpoint (ex. d111111abcdef8.cloudfront.net) that users can point their domains to. These domains need to be listed in the "Alternate Domain Names (CNAMEs)" field for the CloudFront distribution.
+Each CloudFront distribution has a unique endpoint (ex. d111111abcdef8.cloudfront.net) that users can point their DNS records to. All a user's domains need to be listed in the "Alternate Domain Names (CNAMEs)" field for the CloudFront distribution.
 
 When a CloudFront endpoint receives a request, it does NOT automatically serve content from the corresponding distribution. Instead, CloudFront uses the HOST header of the request to determine which distribution to use. This means two things:
 
-1. If the HOST header does not match an entry in the "Alternate Domain Names (CNAMEs)" field of the user's distribution, the request will fail.
+1. If the HOST header does not match an entry in the "Alternate Domain Names (CNAMEs)" field of the intended distribution, the request will fail.
 
 2. Any other distribution that contains the specific domain in the HOST header will receive the request and respond to it normally.
 
@@ -21,7 +23,7 @@ This is what allows the domains to be hijacked. There are many cases where a Clo
 * Because "test.disloops.com" was not added to the "Alternate Domain Names (CNAMEs)" field for the distribution, requests to "test.disloops.com" will fail.
 * Another user can create a CloudFront distribution and add "test.disloops.com" to the "Alternate Domain Names (CNAMEs)" field to hijack the domain.
 
-It is bizarre that the unique CloudFront distribution endpoint in the request is effectively ignored. Until that changes...
+While I understand that many CloudFront distributions share the same infrastructure, I think it is bizarre that the unique CloudFront distribution endpoints in the request are effectively ignored.
 
 #### Disclaimer
 
@@ -59,7 +61,7 @@ cloudfrunt.py [-h] [-l TARGET_FILE] [-d DOMAINS] [-o ORIGIN] [-i ORIGIN_ID] [-s]
 ```
 $ python cloudfrunt.py -o cloudfrunt.com.s3-website-us-east-1.amazonaws.com -i S3-cloudfrunt -l list.txt
 
- CloudFrunt v1.0.1
+ CloudFrunt v1.0.2
 
  [+] Enumerating DNS entries for google.com
  [-] No issues found for google.com
@@ -72,3 +74,15 @@ $ python cloudfrunt.py -o cloudfrunt.com.s3-website-us-east-1.amazonaws.com -i S
  [+] Created new CloudFront distribution EXBC12DE3F45G
  [+] Added test.disloops.com to CloudFront distribution EXBC12DE3F45G
 ```
+
+#### Changes
+
+* v1.0.2
+    * Minor fixes to wildcard domain handling
+    * Corrected error resulting from mixed-case domains
+    * Publicly released CloudFrunt
+* v1.0.1
+    * Automated the ability to add domains to CloudFront
+* v1.0.0
+    * Initial commit
+

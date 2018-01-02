@@ -19,7 +19,7 @@ from netaddr import IPNetwork
 from subprocess import call
 
 __author__ = 'Matt Westfall'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __email__ = 'disloops@gmail.com'
 
 # hotfix for dnsrecon (v0.8.12) to avoid user input
