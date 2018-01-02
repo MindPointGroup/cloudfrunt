@@ -74,15 +74,3 @@ $ python cloudfrunt.py -o cloudfrunt.com.s3-website-us-east-1.amazonaws.com -i S
  [+] Created new CloudFront distribution EXBC12DE3F45G
  [+] Added test.disloops.com to CloudFront distribution EXBC12DE3F45G
 ```
-
-#### Changes
-
-* v1.0.2
-    * Minor fixes to wildcard domain handling
-    * Corrected error resulting from mixed-case domains
-    * Publicly released CloudFrunt
-* v1.0.1
-    * Automated the ability to add domains to CloudFront
-* v1.0.0
-    * Initial commit
-
