@@ -8,7 +8,7 @@ Read more here: https://disloops.com/cloudfront-hijacking/
 
 CloudFront is a Content Delivery Network (CDN) provided by Amazon Web Services (AWS). CloudFront users create *distributions* with specific origins to serve content from (an S3 bucket, for example).
 
-Each CloudFront distribution has a unique endpoint (ex. d111111abcdef8.cloudfront.net) that users can point their DNS records to. All a user's domains need to be listed in the "Alternate Domain Names (CNAMEs)" field for the CloudFront distribution.
+Each CloudFront distribution has a unique endpoint (ex. d111111abcdef8.cloudfront.net) that users can point their DNS records to. All of a user's domains need to be listed in the "Alternate Domain Names (CNAMEs)" field for the CloudFront distribution.
 
 When a CloudFront endpoint receives a request, it does NOT automatically serve content from the corresponding distribution. Instead, CloudFront uses the HOST header of the request to determine which distribution to use. This means two things:
 
