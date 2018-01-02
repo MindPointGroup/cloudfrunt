@@ -23,7 +23,7 @@ This is what allows the domains to be hijacked. There are many cases where a Clo
 * Because "test.disloops.com" was not added to the "Alternate Domain Names (CNAMEs)" field for the distribution, requests to "test.disloops.com" will fail.
 * Another user can create a CloudFront distribution and add "test.disloops.com" to the "Alternate Domain Names (CNAMEs)" field to hijack the domain.
 
-While I understand that many CloudFront distributions share the same infrastructure, I think it is bizarre that the unique CloudFront distribution endpoints in the request are effectively ignored.
+I understand that many CloudFront distributions share the same infrastructure but I think it is bizarre that the unique CloudFront distribution endpoints in the request are effectively ignored.
 
 #### Disclaimer
 
