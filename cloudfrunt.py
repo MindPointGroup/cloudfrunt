@@ -59,7 +59,7 @@ def recon_target(domain,cf_ranges,no_dns):
     if no_dns is not True:
         print ' [+] Enumerating DNS entries for ' + domain    
         with open(os.devnull, 'w') as devnull:
-            call(['python','./dnsrecon/dnsrecon.py','-d' + domain,'-tstd,brt','-f','-joutput.json'], stdout=devnull, stderr=devnull)
+            call(['python','./dnsrecon/dnsrecon.py','-d' + domain,'-tstd,brt','-f','--lifetime=1','-joutput.json'], stdout=devnull, stderr=devnull)
         try:
             dns_records = json.load(open('output.json'))
             os.remove('output.json')
