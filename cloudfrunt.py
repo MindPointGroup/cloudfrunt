@@ -77,7 +77,6 @@ def recon_target(domain,cf_ranges,no_dns):
             dns_records = json.load(open('output.json'))
             os.remove('output.json')
         except:
-            print ' [?] Got an unexpected error loading dnsrecon results. Skipping...'
             pass
     else:
         return [domain] if get_cf_domain(domain,cf_ranges) else []
