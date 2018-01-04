@@ -15,8 +15,9 @@ import textwrap
 # pip install dnspython
 # git clone https://github.com/darkoperator/dnsrecon.git
 
-from netaddr import IPNetwork
 from subprocess import call
+from netaddr import IPNetwork
+from botocore.exceptions import ClientError
 
 __author__ = 'Matt Westfall'
 __version__ = '1.0.2'
@@ -46,7 +47,6 @@ def get_cf_ranges(cf_url):
     response = None
     ranges = []
 
-    # address any 'urllib2.URLError' errors
     while response is None:
         try:
             response = urllib2.urlopen(cf_url)
@@ -61,12 +61,14 @@ def get_cf_ranges(cf_url):
         service = item.get('service')
         if service == 'CLOUDFRONT':
             ranges.append(item.get('ip_prefix'))
+
     return ranges
 
 # find more domains and correct for CloudFront
 def recon_target(domain,cf_ranges,no_dns):
 
     dns_records = []
+
     if no_dns is not True:
         print ' [+] Enumerating DNS entries for ' + domain    
         with open(os.devnull, 'w') as devnull:
@@ -75,6 +77,7 @@ def recon_target(domain,cf_ranges,no_dns):
             dns_records = json.load(open('output.json'))
             os.remove('output.json')
         except:
+            print ' [?] Got an unexpected error loading dnsrecon results. Skipping...'
             pass
     else:
         return [domain] if get_cf_domain(domain,cf_ranges) else []
@@ -87,15 +90,18 @@ def recon_target(domain,cf_ranges,no_dns):
     for record in dns_records:
         if (record.get('name') not in url_list) and get_cf_domain(record.get('name'),cf_ranges):
             url_list.append(str(record.get('name')).lower())
+
     return url_list
 
 # check if domain points to CloudFront
 def get_cf_domain(domain,cf_ranges):
 
     domain_ips = []
+
     try:
         domain_ips = socket.gethostbyname_ex(domain)[2]
     except:
+        print ' [?] Got an unexpected error getting IP address for ' + str(domain) + '. Skipping...'
         pass
 
     for ip in domain_ips:
@@ -110,6 +116,7 @@ def get_cf_domain(domain,cf_ranges):
 def find_cf_issues(domains):
 
     error_domains = []
+
     for domain in domains:
         try:
             response = urllib2.urlopen('http://' + domain)
@@ -118,6 +125,7 @@ def find_cf_issues(domains):
                 error_domains.append(domain)
         except:
             pass
+
     return error_domains
 
 # add a domain to CloudFront
@@ -127,16 +135,11 @@ def add_domain(domain,client,origin,origin_id,distribution_id):
         distribution_id = create_distribution(client,origin,origin_id)
 
     response = None
-
-    # address any boto3 'KeyError' errors
     while response is None:
         try:
             response = client.get_distribution_config(Id=distribution_id)
-        except client.exceptions.KeyError as e:
-            print ' [?] Got boto3 "KeyError: \'access_key\'" trying to get configuration for distribution ' + str(distribution_id) + '. Retrying...'
-        except:
-            print ' [?] Got an unexpected error trying to get configuration for distribution ' + str(distribution_id) + '. Exiting...'
-            raise
+        except ClientError as e:
+            print ' [?] Got boto3 error ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message'] + '. Retrying...'
 
     aliases = response['DistributionConfig']['Aliases']
 
@@ -154,13 +157,16 @@ def add_domain(domain,client,origin,origin_id,distribution_id):
     aliases['Quantity'] += 1
     response['DistributionConfig']['Aliases'] = aliases
 
-    try:
-        response = client.update_distribution(Id=distribution_id,DistributionConfig=response['DistributionConfig'],IfMatch=response['ETag'])
-        print ' [+] Added ' + str(domain) + ' to CloudFront distribution '  + str(distribution_id)
-    except client.exceptions.CNAMEAlreadyExists as e:
-        print ' [?] Somehow ' + str(domain) + ' is already part of another distribution?'
-    except:
-        print ' [?] Error adding ' + str(domain) + ' to CloudFront distribution '  + str(distribution_id)
+    added_domain = None
+    while added_domain is None:
+        try:
+            added_domain = client.update_distribution(Id=distribution_id,DistributionConfig=response['DistributionConfig'],IfMatch=response['ETag'])
+            print ' [+] Added ' + str(domain) + ' to CloudFront distribution ' + str(distribution_id)
+        except client.exceptions.CNAMEAlreadyExists as e:
+            print ' [?] ' + str(domain) + ' is already part of another distribution.'
+            added_domain = False
+        except ClientError as e:
+            print ' [?] Got boto3 error ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message'] + ' adding ' + str(domain) + ' to CloudFront distribution ' + str(distribution_id) + '. Retrying...'
 
     return distribution_id
 
@@ -276,13 +282,14 @@ def create_distribution(client,origin,origin_id):
         }, 
     }
 
-    try:
-        response = client.create_distribution(DistributionConfig=base_cf_config)
-        distribution_id = response['Distribution']['Id']
-        print ' [+] Created new CloudFront distribution ' + str(distribution_id)
-    except:
-        print ' [?] Got an unexpected error when trying to create new CloudFront distribution. Exiting...'
-        raise
+    response = None
+    while response is None:
+        try:
+            response = client.create_distribution(DistributionConfig=base_cf_config)
+            distribution_id = response['Distribution']['Id']
+            print ' [+] Created new CloudFront distribution ' + str(distribution_id)
+        except ClientError as e:
+            print ' [?] Got boto3 error ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message'] + '. Retrying...'
         
     return distribution_id
 
