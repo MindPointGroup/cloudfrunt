@@ -281,10 +281,8 @@ def create_distribution(client,origin,origin_id):
         distribution_id = response['Distribution']['Id']
         print ' [+] Created new CloudFront distribution ' + str(distribution_id)
     except:
-        # Need to figure out it KeyError gets thrown here when running in parallel...
+        print ' [?] Got an unexpected error when trying to create new CloudFront distribution. Exiting...'
         raise
-        # print ' [?] Could not create new CloudFront distribution - limit reached? Exiting...'
-        #sys.exit(1)
         
     return distribution_id
 
