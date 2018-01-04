@@ -88,7 +88,7 @@ def recon_target(domain,cf_ranges,no_dns):
 
     url_list = []
     for record in dns_records:
-        if (record.get('name') not in url_list) and get_cf_domain(record.get('name'),cf_ranges):
+        if record.get('name') and (record.get('name') not in url_list) and get_cf_domain(record.get('name'),cf_ranges):
             url_list.append(str(record.get('name')).lower())
 
     return url_list
@@ -101,7 +101,6 @@ def get_cf_domain(domain,cf_ranges):
     try:
         domain_ips = socket.gethostbyname_ex(domain)[2]
     except:
-        print ' [?] Got an unexpected error getting IP address for ' + str(domain) + '. Skipping...'
         pass
 
     for ip in domain_ips:
