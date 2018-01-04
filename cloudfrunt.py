@@ -9,6 +9,7 @@ import socket
 import urllib2
 import argparse
 import textwrap
+import tldextract
 
 # pip install boto3
 # pip install netaddr
@@ -95,6 +96,9 @@ def recon_target(domain,cf_ranges,no_dns):
 # check if domain points to CloudFront
 def get_cf_domain(domain,cf_ranges):
 
+    if domain.endswith('cloudfront.net'):
+        return False
+
     domain_ips = []
 
     try:
@@ -137,7 +141,8 @@ def add_domain(domain,client,origin,origin_id,distribution_id):
         try:
             response = client.get_distribution_config(Id=distribution_id)
         except ClientError as e:
-            print ' [?] Got boto3 error ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message'] + '. Retrying...'
+            print ' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message']
+            print ' [?] Retrying...'
 
     aliases = response['DistributionConfig']['Aliases']
 
@@ -164,7 +169,8 @@ def add_domain(domain,client,origin,origin_id,distribution_id):
             print ' [?] ' + str(domain) + ' is already part of another distribution.'
             added_domain = False
         except ClientError as e:
-            print ' [?] Got boto3 error ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message'] + ' adding ' + str(domain) + ' to CloudFront distribution ' + str(distribution_id) + '. Retrying...'
+            print ' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message']
+            print ' [?] Retrying...'
 
     return distribution_id
 
@@ -287,7 +293,8 @@ def create_distribution(client,origin,origin_id):
             distribution_id = response['Distribution']['Id']
             print ' [+] Created new CloudFront distribution ' + str(distribution_id)
         except ClientError as e:
-            print ' [?] Got boto3 error ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message'] + '. Retrying...'
+            print ' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message']
+            print ' [?] Retrying...'
         
     return distribution_id
 
