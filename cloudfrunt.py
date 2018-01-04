@@ -43,8 +43,19 @@ def get_domains(input_file):
 # grab all the CloudFront IP ranges
 def get_cf_ranges(cf_url):
 
+    response = None
     ranges = []
-    response = urllib2.urlopen(cf_url)
+
+    # address any 'urllib2.URLError' errors
+    while response is None:
+        try:
+            response = urllib2.urlopen(cf_url)
+        except urllib2.URLError as e:
+            print ' [?] Got urllib2.URLError trying to get CloudFront IP ranges. Retrying...'
+        except:
+            print ' [?] Got an unexpected error trying to get CloudFront IP ranges. Exiting...'
+            raise
+
     cf_data = json.load(response)
     for item in cf_data['prefixes']:
         service = item.get('service')
@@ -115,7 +126,18 @@ def add_domain(domain,client,origin,origin_id,distribution_id):
     if not distribution_id:
         distribution_id = create_distribution(client,origin,origin_id)
 
-    response = client.get_distribution_config(Id=distribution_id)
+    response = None
+
+    # address any boto3 'KeyError' errors
+    while response is None:
+        try:
+            response = client.get_distribution_config(Id=distribution_id)
+        except client.exceptions.KeyError as e:
+            print ' [?] Got boto3 "KeyError: \'access_key\'" trying to get configuration for distribution ' + str(distribution_id) + '. Retrying...'
+        except:
+            print ' [?] Got an unexpected error trying to get configuration for distribution ' + str(distribution_id) + '. Exiting...'
+            raise
+
     aliases = response['DistributionConfig']['Aliases']
 
     # default maximum number of CNAMEs for one distribution
@@ -259,8 +281,10 @@ def create_distribution(client,origin,origin_id):
         distribution_id = response['Distribution']['Id']
         print ' [+] Created new CloudFront distribution ' + str(distribution_id)
     except:
-        print ' [?] Could not create new CloudFront distribution - limit reached? Exiting...'
-        sys.exit(1)
+        # Need to figure out it KeyError gets thrown here when running in parallel...
+        raise
+        # print ' [?] Could not create new CloudFront distribution - limit reached? Exiting...'
+        #sys.exit(1)
         
     return distribution_id
 
