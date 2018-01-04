@@ -9,7 +9,6 @@ import socket
 import urllib2
 import argparse
 import textwrap
-import tldextract
 
 # pip install boto3
 # pip install netaddr
