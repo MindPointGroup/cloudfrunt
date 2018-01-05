@@ -61,7 +61,7 @@ cloudfrunt.py [-h] [-l TARGET_FILE] [-d DOMAINS] [-o ORIGIN] [-i ORIGIN_ID] [-s]
 ```
 $ python cloudfrunt.py -o cloudfrunt.com.s3-website-us-east-1.amazonaws.com -i S3-cloudfrunt -l list.txt
 
- CloudFrunt v1.0.2
+ CloudFrunt v1.0.3
 
  [+] Enumerating DNS entries for google.com
  [-] No issues found for google.com

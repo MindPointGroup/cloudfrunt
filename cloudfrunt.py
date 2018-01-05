@@ -20,7 +20,7 @@ from netaddr import IPNetwork
 from botocore.exceptions import ClientError
 
 __author__ = 'Matt Westfall'
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 __email__ = 'disloops@gmail.com'
 
 # hotfix for dnsrecon (v0.8.12) to avoid user input
@@ -165,7 +165,7 @@ def add_domain(domain,client,origin,origin_id,distribution_id):
             added_domain = client.update_distribution(Id=distribution_id,DistributionConfig=response['DistributionConfig'],IfMatch=response['ETag'])
             print ' [+] Added ' + str(domain) + ' to CloudFront distribution ' + str(distribution_id)
         except client.exceptions.CNAMEAlreadyExists as e:
-            print ' [?] ' + str(domain) + ' is already part of another distribution.'
+            print ' [?] The domain ' + str(domain) + ' is already part of another distribution.'
             added_domain = False
         except ClientError as e:
             print ' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message']
