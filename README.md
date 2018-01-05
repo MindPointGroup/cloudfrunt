@@ -2,13 +2,11 @@
 
 CloudFrunt is a tool for identifying misconfigured CloudFront domains.
 
-Read more here: https://disloops.com/cloudfront-hijacking/
-
 #### Background
 
-CloudFront is a Content Delivery Network (CDN) provided by Amazon Web Services (AWS). CloudFront users create *distributions* with specific origins to serve content from (an S3 bucket, for example).
+CloudFront is a Content Delivery Network (CDN) provided by Amazon Web Services (AWS). CloudFront users create "distributions" that serve content from specific sources (an S3 bucket, for example).
 
-Each CloudFront distribution has a unique endpoint (ex. d111111abcdef8.cloudfront.net) that users can point their DNS records to. All of a user's domains need to be listed in the "Alternate Domain Names (CNAMEs)" field for the CloudFront distribution.
+Each CloudFront distribution has a unique endpoint for users to point their DNS records to (ex. d111111abcdef8.cloudfront.net). All of the domains using a specific  distribution need to be listed in the "Alternate Domain Names (CNAMEs)" field in the options for that distribution.
 
 When a CloudFront endpoint receives a request, it does NOT automatically serve content from the corresponding distribution. Instead, CloudFront uses the HOST header of the request to determine which distribution to use. This means two things:
 
@@ -16,14 +14,14 @@ When a CloudFront endpoint receives a request, it does NOT automatically serve c
 
 2. Any other distribution that contains the specific domain in the HOST header will receive the request and respond to it normally.
 
-This is what allows the domains to be hijacked. There are many cases where a CloudFront user does not to list every domain received in the HOST headers. For example:
+This is what allows the domains to be hijacked. There are many cases where a CloudFront user fails to list all the necessary domains that might be received in the HOST headers. For example:
 
 * The domain "test.disloops.com" is a CNAME record that points to "disloops.com".
 * The "disloops.com" domain is set up to use a CloudFront distribution.
 * Because "test.disloops.com" was not added to the "Alternate Domain Names (CNAMEs)" field for the distribution, requests to "test.disloops.com" will fail.
 * Another user can create a CloudFront distribution and add "test.disloops.com" to the "Alternate Domain Names (CNAMEs)" field to hijack the domain.
 
-I know that many CloudFront distributions share the same infrastructure but I think it is bizarre that the unique CloudFront distribution endpoints in the request are effectively ignored.
+This means that the unique endpoint that CloudFront binds to a single distribution is effectively meaningless. A request to one specific subdomain is not limited to the CloudFront distribution it is associated with.
 
 #### Disclaimer
 
