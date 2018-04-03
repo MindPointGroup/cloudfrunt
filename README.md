@@ -14,14 +14,14 @@ When a CloudFront endpoint receives a request, it does NOT automatically serve c
 
 2. Any other distribution that contains the specific domain in the HOST header will receive the request and respond to it normally.
 
-This is what allows the domains to be hijacked. There are many cases where a CloudFront user fails to list all the necessary domains that might be received in the HOST headers. For example:
+This is what allows the domains to be hijacked. There are many cases where a CloudFront user fails to list all the necessary domains that might be received in the HOST header. For example:
 
 * The domain "test.disloops.com" is a CNAME record that points to "disloops.com".
 * The "disloops.com" domain is set up to use a CloudFront distribution.
 * Because "test.disloops.com" was not added to the "Alternate Domain Names (CNAMEs)" field for the distribution, requests to "test.disloops.com" will fail.
 * Another user can create a CloudFront distribution and add "test.disloops.com" to the "Alternate Domain Names (CNAMEs)" field to hijack the domain.
 
-This means that the unique endpoint that CloudFront binds to a single distribution is effectively meaningless. A request to one specific subdomain is not limited to the CloudFront distribution it is associated with.
+This means that the unique endpoint that CloudFront binds to a single distribution is effectively meaningless. A request to one specific CloudFront subdomain is not limited to the distribution it is associated with.
 
 #### Disclaimer
 
