@@ -30,12 +30,8 @@ THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED WARRA
 #### Installation
 
 ```
-$ pip install boto3
-$ pip install netaddr
-$ pip install dnspython
-$ git clone https://github.com/disloops/cloudfrunt.git
-$ cd cloudfrunt
-$ git clone https://github.com/darkoperator/dnsrecon.git
+$ git clone --recursive https://github.com/MindPointGroup/cloudfrunt
+$ pip install -r requirements.txt
 ```
 
 CloudFrunt expects the *dnsrecon* script to be cloned into a subdirectory called *dnsrecon*.
