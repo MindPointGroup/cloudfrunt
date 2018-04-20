@@ -72,9 +72,9 @@ def get_cf_ranges(cf_url):
         try:
             response = urllib2.urlopen(cf_url)
         except urllib2.URLError as e:
-            print ' [?] Got urllib2.URLError trying to get CloudFront IP ranges. Retrying...'
+            print(' [?] Got urllib2.URLError trying to get CloudFront IP ranges. Retrying...')
         except:
-            print ' [?] Got an unexpected error trying to get CloudFront IP ranges. Exiting...'
+            print(' [?] Got an unexpected error trying to get CloudFront IP ranges. Exiting...')
             raise
 
     cf_data = json.load(response)
@@ -91,7 +91,7 @@ def recon_target(domain,cf_ranges,no_dns):
     dns_records = []
 
     if no_dns is not True:
-        print ' [+] Enumerating DNS entries for ' + domain    
+        print(' [+] Enumerating DNS entries for ' + domain)
         with open(os.devnull, 'w') as devnull:
             call(['python','./dnsrecon/dnsrecon.py','-d' + domain,'-tstd,brt','-f','--lifetime=1','-joutput.json'], stdout=devnull, stderr=devnull)
         try:
@@ -103,7 +103,7 @@ def recon_target(domain,cf_ranges,no_dns):
         return [domain] if get_cf_domain(domain,cf_ranges) else []
 
     if len(dns_records) > 1000:
-        print ' [?] Is ' + domain + ' a wildcard domain? Skipping...'       
+        print(' [?] Is ' + domain + ' a wildcard domain? Skipping...')
         return [domain] if get_cf_domain(domain,cf_ranges) else []
 
     url_list = []
@@ -130,7 +130,7 @@ def get_cf_domain(domain,cf_ranges):
         for ip_range in cf_ranges:
             ip_network = IPNetwork(ip_range)
             if ip in ip_network:                       
-                print ' [+] Found CloudFront domain --> ' + str(domain)
+                print(' [+] Found CloudFront domain --> ' + str(domain))
                 return True
     return False
 
@@ -161,8 +161,8 @@ def add_domain(domain,client,origin,origin_id,distribution_id):
         try:
             response = client.get_distribution_config(Id=distribution_id)
         except ClientError as e:
-            print ' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message']
-            print ' [?] Retrying...'
+            print(' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message'])
+            print(' [?] Retrying...')
 
     aliases = response['DistributionConfig']['Aliases']
 
@@ -184,13 +184,13 @@ def add_domain(domain,client,origin,origin_id,distribution_id):
     while added_domain is None:
         try:
             added_domain = client.update_distribution(Id=distribution_id,DistributionConfig=response['DistributionConfig'],IfMatch=response['ETag'])
-            print ' [+] Added ' + str(domain) + ' to CloudFront distribution ' + str(distribution_id)
+            print(' [+] Added ' + str(domain) + ' to CloudFront distribution ' + str(distribution_id))
         except client.exceptions.CNAMEAlreadyExists as e:
-            print ' [?] The domain ' + str(domain) + ' is already part of another distribution.'
+            print(' [?] The domain ' + str(domain) + ' is already part of another distribution.')
             added_domain = False
         except ClientError as e:
-            print ' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message']
-            print ' [?] Retrying...'
+            print(' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message'])
+            print(' [?] Retrying...')
 
     return distribution_id
 
@@ -311,10 +311,10 @@ def create_distribution(client,origin,origin_id):
         try:
             response = client.create_distribution(DistributionConfig=base_cf_config)
             distribution_id = response['Distribution']['Id']
-            print ' [+] Created new CloudFront distribution ' + str(distribution_id)
+            print(' [+] Created new CloudFront distribution ' + str(distribution_id))
         except ClientError as e:
-            print ' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message']
-            print ' [?] Retrying...'
+            print(' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message'])
+            print(' [?] Retrying...')
         
     return distribution_id
 
@@ -347,32 +347,32 @@ def main():
     args = parser.parse_args()
 
     if args.show_help is True:
-        print ''
-        print parser.format_help()
+        print('')
+        print(parser.format_help())
         sys.exit(0)
 
-    print logo_msg
+    print(logo_msg)
 
     # 2. Check input and handle the target list
 
     target_list = []
 
     if not args.target_file and not args.domains:
-        print ''
+        print('')
         parser.error('\n\n Either --target-file or --domains is required.\n Or use --help for more info.\n')
 
     boto_client = None
     distribution_id = ''
 
     if (args.origin and not args.origin_id) or (args.origin_id and not args.origin):
-        print ''
+        print('')
         parser.error('\n\n Both --origin and --origin-id are required to create new distributions.\n')
     elif args.origin and args.origin_id:
         boto_client = boto3.client('cloudfront')
 
     if args.no_dns is not True:
         if not os.path.isfile('./dnsrecon/dnsrecon.py'):
-            print ''
+            print('')
             parser.error('\n\n The file \'./dnsrecon/dnsrecon.py\' was not found.\n Use -N to skip dnsrecon or use --help for more info.\n')
         else:
             patch_dnsrecon()
@@ -391,26 +391,26 @@ def main():
 
     for target in target_list:
     
-        print ''
+        print('')
         target_scope = find_cf_issues(recon_target(target,cf_ranges,args.no_dns))
 
         if target_scope:
-            print ' [-] Potentially misconfigured CloudFront domains:'
+            print(' [-] Potentially misconfigured CloudFront domains:')
 
             for domain in target_scope:
-                print ' [#] --> ' + domain
+                print(' [#] --> ' + domain)
                 if args.origin:
                     distribution_id = add_domain(domain,boto_client,args.origin,args.origin_id,distribution_id)
 
             if args.save is True:
                 with open('results.txt', 'a') as f:
-                    print ' [-] Writing output to results.txt...'
+                    print(' [-] Writing output to results.txt...')
                     for domain in target_scope:
                         f.write(str(domain) + '\n')
         else:
-            print ' [-] No issues found for ' + target
+            print(' [-] No issues found for ' + target)
 
-    print ''
+    print('')
 
 if __name__ == '__main__':
     sys.exit(main())
