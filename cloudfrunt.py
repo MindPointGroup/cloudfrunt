@@ -31,11 +31,6 @@ import urllib2
 import argparse
 import textwrap
 
-# pip install -r requirements.txt
-# - boto3
-# - netaddr
-# - install dnspython
-
 from subprocess import call
 from netaddr import IPNetwork
 from botocore.exceptions import ClientError
