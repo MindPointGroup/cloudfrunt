@@ -31,17 +31,17 @@ import urllib2
 import argparse
 import textwrap
 
-# pip install boto3
-# pip install netaddr
-# pip install dnspython
-# git clone https://github.com/darkoperator/dnsrecon.git
+# pip install -r requirements.txt
+# - boto3
+# - netaddr
+# - install dnspython
 
 from subprocess import call
 from netaddr import IPNetwork
 from botocore.exceptions import ClientError
 
 __author__ = 'Matt Westfall'
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 __email__ = 'disloops@gmail.com'
 
 # hotfix for dnsrecon (v0.8.12) to avoid user input
@@ -328,10 +328,9 @@ def main():
                  ' $ python cloudfrunt.py -l list.txt -s\n' +
                  logo_msg + '\n A tool for identifying misconfigured CloudFront domains.' +
                  '\n\n NOTE: There are a couple dependencies for this program to work correctly:\n' +
-                 '\n 1) pip install boto3' +
-                 '\n 2) pip install netaddr' +
-                 '\n 3) pip install dnspython' +
-                 '\n 4) git clone https://github.com/darkoperator/dnsrecon.git')
+                 '\n 1) pip install -r requirements.txt\n' +
+                 '\n 2) If you did not use \"git clone --recursive ...\" you will need to run the following:\n' +
+                 '\n $ git clone https://github.com/darkoperator/dnsrecon.git')
 
     parser = argparse.ArgumentParser(add_help=False,formatter_class=argparse.RawTextHelpFormatter,epilog=epilog_msg)
     parser.add_argument('-h', '--help', dest='show_help', action='store_true', help='Show this message and exit\n\n')
