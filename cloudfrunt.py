@@ -43,7 +43,7 @@ __email__ = 'disloops@gmail.com'
 def patch_dnsrecon():
 
     with open('./dnsrecon/dnsrecon.py', 'r') as f:
-      dnsrecon_data = f.read()
+        dnsrecon_data = f.read()
     dnsrecon_data = dnsrecon_data.replace('continue_brt = str(sys.stdin.readline()[:-1])','continue_brt = "n"')
     with open('./dnsrecon/dnsrecon.py', 'w') as f:
         f.write(dnsrecon_data)
@@ -124,7 +124,7 @@ def get_cf_domain(domain,cf_ranges):
     for ip in domain_ips:
         for ip_range in cf_ranges:
             ip_network = IPNetwork(ip_range)
-            if ip in ip_network:                       
+            if ip in ip_network:
                 print(' [+] Found CloudFront domain --> ' + str(domain))
                 return True
     return False
@@ -163,7 +163,7 @@ def add_domain(domain,client,origin,origin_id,distribution_id):
 
     # default maximum number of CNAMEs for one distribution
     if aliases['Quantity'] == 100:
-        distribution_id = create_distribution(client,origin,origin_id)   
+        distribution_id = create_distribution(client,origin,origin_id)
         response = client.get_distribution_config(Id=distribution_id)
         aliases = response['DistributionConfig']['Aliases']
 
@@ -203,25 +203,25 @@ def create_distribution(client,origin,origin_id):
             'Quantity': 1,
             'Items': [
                 {
-                    'OriginPath': '', 
+                    'OriginPath': '',
                     'CustomOriginConfig': {
                         'OriginSslProtocols': {
                             'Items': [
-                                'TLSv1', 
-                                'TLSv1.1', 
+                                'TLSv1',
+                                'TLSv1.1',
                                 'TLSv1.2'
-                            ], 
+                            ],
                             'Quantity': 3
-                        }, 
-                        'OriginProtocolPolicy': 'http-only', 
-                        'OriginReadTimeout': 30, 
-                        'HTTPPort': 80, 
-                        'HTTPSPort': 443, 
+                        },
+                        'OriginProtocolPolicy': 'http-only',
+                        'OriginReadTimeout': 30,
+                        'HTTPPort': 80,
+                        'HTTPSPort': 443,
                         'OriginKeepaliveTimeout': 5
-                    }, 
+                    },
                     'CustomHeaders': {
                         'Quantity': 0
-                    }, 
+                    },
                     'Id': origin_id,
                     'DomainName': origin
                 }
@@ -229,76 +229,76 @@ def create_distribution(client,origin,origin_id):
         },
         'CacheBehaviors': {
             'Quantity': 0
-        }, 
-        'IsIPV6Enabled': True, 
+        },
+        'IsIPV6Enabled': True,
         'Logging': {
             'Bucket': '',
             'Prefix': '',
             'Enabled': False,
             'IncludeCookies': False
-        }, 
-        'WebACLId': '', 
-        'DefaultRootObject': '', 
-        'PriceClass': 'PriceClass_All', 
-        'Enabled': True, 
+        },
+        'WebACLId': '',
+        'DefaultRootObject': '',
+        'PriceClass': 'PriceClass_All',
+        'Enabled': True,
         'DefaultCacheBehavior': {
             'TrustedSigners': {
-                'Enabled': False, 
+                'Enabled': False,
                 'Quantity': 0
-            }, 
+            },
             'LambdaFunctionAssociations': {
                 'Quantity': 0
-            }, 
-            'TargetOriginId': origin_id, 
-            'ViewerProtocolPolicy': 'allow-all', 
+            },
+            'TargetOriginId': origin_id,
+            'ViewerProtocolPolicy': 'allow-all',
             'ForwardedValues': {
                 'Headers': {
                     'Quantity': 0
-                }, 
+                },
                 'Cookies': {
                     'Forward': 'none'
-                }, 
+                },
                 'QueryStringCacheKeys': {
                     'Quantity': 0
-                }, 
+                },
                 'QueryString': False
-            }, 
-            'MaxTTL': 31536000, 
-            'SmoothStreaming': False, 
-            'DefaultTTL': 86400, 
+            },
+            'MaxTTL': 31536000,
+            'SmoothStreaming': False,
+            'DefaultTTL': 86400,
             'AllowedMethods': {
                 'Items': [
-                    'HEAD', 
+                    'HEAD',
                     'GET'
-                ], 
+                ],
                 'CachedMethods': {
                     'Items': [
-                        'HEAD', 
+                        'HEAD',
                         'GET'
-                    ], 
+                    ],
                     'Quantity': 2
-                }, 
+                },
                 'Quantity': 2
-            }, 
-            'MinTTL': 0, 
+            },
+            'MinTTL': 0,
             'Compress': False
-        }, 
-        'CallerReference': str(time.time()*10).replace('.', ''), 
+        },
+        'CallerReference': str(time.time()*10).replace('.', ''),
         'ViewerCertificate': {
-            'CloudFrontDefaultCertificate': True, 
-            'MinimumProtocolVersion': 'TLSv1', 
+            'CloudFrontDefaultCertificate': True,
+            'MinimumProtocolVersion': 'TLSv1',
             'CertificateSource': 'cloudfront'
-        }, 
+        },
         'CustomErrorResponses': {
             'Quantity': 0
-        }, 
-        'HttpVersion': 'http2', 
+        },
+        'HttpVersion': 'http2',
         'Restrictions': {
             'GeoRestriction': {
-                'RestrictionType': 'none', 
+                'RestrictionType': 'none',
                 'Quantity': 0
             }
-        }, 
+        },
     }
 
     response = None
@@ -310,7 +310,7 @@ def create_distribution(client,origin,origin_id):
         except ClientError as e:
             print(' [?] Got boto3 error - ' + e.response['Error']['Code'] + ': ' + e.response['Error']['Message'])
             print(' [?] Retrying...')
-        
+
     return distribution_id
 
 def main():
