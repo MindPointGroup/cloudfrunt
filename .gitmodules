@@ -1,0 +1,3 @@
+[submodule "dnsrecon"]
+	path = dnsrecon
+	url = https://github.com/darkoperator/dnsrecon.git
