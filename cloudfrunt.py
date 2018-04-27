@@ -148,7 +148,7 @@ def find_cf_issues(domains):
             if e.code == 403 and 'Bad request' in e.fp.read():
                 try:
                     response = urlopen('https://' + domain)
-                except (URLError) as e:
+                except URLError as e:
                     if 'handshake' in str(e).lower() or e.code == 403 and 'Bad request' in e.fp.read():
                         error_domains.append(domain)
                 except:
