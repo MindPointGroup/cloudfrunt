@@ -22,14 +22,22 @@
 # SOFTWARE.
 
 import os
+import ssl
 import sys
 import time
 import json
 import boto3
 import socket
-import urllib2
 import argparse
 import textwrap
+
+try:
+    # Python 3
+    from urllib.request import urlopen
+    from urllib.error import HTTPError, URLError
+except ImportError:
+    # Python 2
+    from urllib2 import urlopen, HTTPError, URLError
 
 from subprocess import call
 from netaddr import IPNetwork
@@ -65,9 +73,9 @@ def get_cf_ranges(cf_url):
 
     while response is None:
         try:
-            response = urllib2.urlopen(cf_url)
-        except urllib2.URLError as e:
-            print(' [?] Got urllib2.URLError trying to get CloudFront IP ranges. Retrying...')
+            response = urlopen(cf_url)
+        except URLError as e:
+            print(' [?] Got URLError trying to get CloudFront IP ranges. Retrying...')
         except:
             print(' [?] Got an unexpected error trying to get CloudFront IP ranges. Exiting...')
             raise
@@ -136,10 +144,15 @@ def find_cf_issues(domains):
 
     for domain in domains:
         try:
-            response = urllib2.urlopen('http://' + domain)
-        except urllib2.HTTPError, e:
+            response = urlopen('http://' + domain)
+        except HTTPError as e:
             if e.code == 403 and 'Bad request' in e.fp.read():
-                error_domains.append(domain)
+                try:
+                    response = urlopen('https://' + domain)
+                except (URLError, ssl.CertificateError):
+                    error_domains.append(domain)
+                except:
+                    pass
         except:
             pass
 
